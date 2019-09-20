@@ -17,8 +17,8 @@ class MainActivity() : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         try {
             tcpClient = ComunicacionTCP("172.16.2.232", 9002){mensaje->
-                Toast.makeText(this,mensaje,Toast.LENGTH_LONG).show() //siempre vem aqui es por error
                 yaarranco = false
+                Toast.makeText(this,mensaje,Toast.LENGTH_LONG).show() //siempre vem aqui es por error
             }
 
         }
@@ -34,7 +34,8 @@ class MainActivity() : AppCompatActivity() {
                     tcpClient?.comenzar_listener() { mensaje ->
                         if (mensaje != "")
                             leer_porta(mensaje)
-
+                        if(mensaje.contains("Timeout"))
+                            yaarranco = false
                     }
                     yaarranco = true
                 }
@@ -49,14 +50,10 @@ class MainActivity() : AppCompatActivity() {
         var msg:String=""
         tcpClient?.stopCLiente()
 
-
     }
 
     private fun leer_porta(mensaje:String){
-        Handler(Looper.getMainLooper()).post{
-            Toast.makeText(this,mensaje,Toast.LENGTH_LONG).show()
-        }
-
+        Toast.makeText(this,mensaje,Toast.LENGTH_LONG).show()
     }
 
 

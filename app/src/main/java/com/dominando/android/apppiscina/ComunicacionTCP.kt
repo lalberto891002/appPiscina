@@ -2,12 +2,10 @@ package com.dominando.android.apppiscina
 
 
 import android.os.Looper
-import android.widget.Toast
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.io.PrintWriter
 import java.lang.Exception
-import java.lang.RuntimeException
 import java.net.InetAddress
 import java.net.Socket
 import kotlin.concurrent.thread
@@ -75,7 +73,9 @@ class ComunicacionTCP(ip:String,porta:Int,msgError:String ="Error opening Socket
                     mensaje = bufferIn?.readLine() ?: ""
                     if (mensaje != "") {
                         contador_timeout = 0
-                        callback(mensaje)
+                        Handler(Looper.getMainLooper()).post{
+                            callback(mensaje)
+                        }
                     }
                     Thread.sleep(100)
                 }
@@ -87,7 +87,7 @@ class ComunicacionTCP(ip:String,porta:Int,msgError:String ="Error opening Socket
 
         thread(start = true,isDaemon = true) {
             while (!detiene_lectura) {
-                contador_timeout++;
+                contador_timeout++
                 if (contador_timeout >= MAX_TIMEOUT_COUNT)
                     time_out_function(callback)
                 Thread.sleep(1000)
@@ -113,4 +113,7 @@ class ComunicacionTCP(ip:String,porta:Int,msgError:String ="Error opening Socket
     }
 
 }
+
+
+
 
