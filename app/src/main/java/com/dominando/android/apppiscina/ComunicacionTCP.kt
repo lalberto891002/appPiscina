@@ -28,6 +28,8 @@ class ComunicacionTCP(ip:String,porta:Int,msgError:String ="Error opening Socket
         initSocket(callback)
     }
 
+    fun getTimerTimeOut():Int = contador_timeout
+
     fun enviar_pelo_socket(mensaje:String):Unit{
         if(bufferOut!=null){
             thread(start = true){
@@ -58,7 +60,6 @@ class ComunicacionTCP(ip:String,porta:Int,msgError:String ="Error opening Socket
               tcpCLient = null
                 Handler(Looper.getMainLooper()).post{
                     callback(errorMsg)
-
                 }
             }
         }
@@ -66,6 +67,7 @@ class ComunicacionTCP(ip:String,porta:Int,msgError:String ="Error opening Socket
 
     fun comenzar_listener(callback:(String)->Unit){
         detiene_lectura = false
+        contador_timeout = 0
         var mensaje = ""
         thread (start = true,isDaemon = true){
             while(!detiene_lectura) {
@@ -92,7 +94,6 @@ class ComunicacionTCP(ip:String,porta:Int,msgError:String ="Error opening Socket
                     time_out_function(callback)
                 Thread.sleep(1000)
             }
-
         }
     }
     fun detiene_timer_lectura(){
@@ -103,14 +104,17 @@ class ComunicacionTCP(ip:String,porta:Int,msgError:String ="Error opening Socket
         detiene_timer_lectura()
         Handler(Looper.getMainLooper()).post{
             callback(errorTimeot)
-
         }
-
     }
 
     companion object{
-        val MAX_TIMEOUT_COUNT = 10
+        val MAX_TIMEOUT_COUNT = 30
     }
+
+}
+
+class Wifi_conexion{
+
 
 }
 
