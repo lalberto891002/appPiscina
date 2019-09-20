@@ -13,7 +13,7 @@ import android.os.Handler
 import java.util.*
 
 //maneja la comunicacao completa envio e recepcao recibe o metodo para os atualizacao da UI e para o erro
-class ComunicacionTCP(ip:String,porta:Int,msgError:String ="Error opening Socket",msgTimeout:String ="Timeout comunication",callback: (String) -> Unit):Observable() {
+class ComunicacionTCP(ip:String,porta:Int,timeOut:Int = MAX_TIMEOUT_COUNT_SHORT,msgError:String ="Error opening Socket",msgTimeout:String ="Timeout comunication",callback: (String) -> Unit):Observable() {
     private var IP = ip
     private var PORTA = porta
     private var tcpCLient :Socket?= null
@@ -23,6 +23,7 @@ class ComunicacionTCP(ip:String,porta:Int,msgError:String ="Error opening Socket
     private val errorTimeot:String =msgTimeout
     private var detiene_lectura = false
     private var contador_timeout = 0
+    private var timeOutMax = timeOut
 
     init {
         initSocket(callback)
@@ -90,7 +91,7 @@ class ComunicacionTCP(ip:String,porta:Int,msgError:String ="Error opening Socket
         thread(start = true,isDaemon = true) {
             while (!detiene_lectura) {
                 contador_timeout++
-                if (contador_timeout >= MAX_TIMEOUT_COUNT)
+                if (contador_timeout >= timeOutMax)
                     time_out_function(callback)
                 Thread.sleep(1000)
             }
@@ -108,7 +109,8 @@ class ComunicacionTCP(ip:String,porta:Int,msgError:String ="Error opening Socket
     }
 
     companion object{
-        val MAX_TIMEOUT_COUNT = 30
+        val MAX_TIMEOUT_COUNT_LONG = 60
+        val MAX_TIMEOUT_COUNT_SHORT = 30
     }
 
 }
