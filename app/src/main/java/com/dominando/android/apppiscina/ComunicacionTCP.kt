@@ -12,9 +12,10 @@ import java.net.InetAddress
 import java.net.Socket
 import kotlin.concurrent.thread
 import android.os.Handler
+import java.util.*
 
 //maneja la comunicacao completa envio e recepcao recibe o metodo para os atualizacao da UI e para o erro
-class ComunicacionTCP(ip:String,porta:Int,msgError:String ="Error opening Socket",msgTimeout:String ="Timeout comunication",callback: (String) -> Unit) {
+class ComunicacionTCP(ip:String,porta:Int,msgError:String ="Error opening Socket",msgTimeout:String ="Timeout comunication",callback: (String) -> Unit):Observable() {
     private var IP = ip
     private var PORTA = porta
     private var tcpCLient :Socket?= null
@@ -59,6 +60,7 @@ class ComunicacionTCP(ip:String,porta:Int,msgError:String ="Error opening Socket
               tcpCLient = null
                 Handler(Looper.getMainLooper()).post{
                     callback(errorMsg)
+
                 }
             }
         }
@@ -107,7 +109,7 @@ class ComunicacionTCP(ip:String,porta:Int,msgError:String ="Error opening Socket
     }
 
     companion object{
-        val MAX_TIMEOUT_COUNT = 60
+        val MAX_TIMEOUT_COUNT = 10
     }
 
 }

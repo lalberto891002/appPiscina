@@ -7,6 +7,7 @@ import android.os.Looper
 import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main.*
 import java.lang.Exception
+import java.util.*
 
 class MainActivity() : AppCompatActivity() {
     private var tcpClient:ComunicacionTCP? =null
@@ -15,9 +16,11 @@ class MainActivity() : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         try {
-            tcpClient = ComunicacionTCP("172.16.2.232", 9002,"Not Socket Open"){mensaje->
+            tcpClient = ComunicacionTCP("172.16.2.232", 9002){mensaje->
                 Toast.makeText(this,mensaje,Toast.LENGTH_LONG).show() //siempre vem aqui es por error
+                yaarranco = false
             }
+
         }
         catch (ex:Exception){
             Toast.makeText(MainActivity@this,"Error abrindo socket",Toast.LENGTH_LONG).show()
@@ -31,6 +34,7 @@ class MainActivity() : AppCompatActivity() {
                     tcpClient?.comenzar_listener() { mensaje ->
                         if (mensaje != "")
                             leer_porta(mensaje)
+
                     }
                     yaarranco = true
                 }
