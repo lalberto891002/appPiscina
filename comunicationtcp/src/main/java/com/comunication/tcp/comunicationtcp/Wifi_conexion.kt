@@ -3,6 +3,7 @@ package com.comunication.tcp.comunicationtcp
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.net.wifi.WifiConfiguration
 import android.net.wifi.WifiManager
 
@@ -11,6 +12,14 @@ class Wifi_conexion(contexto: Context, mask:String): BroadcastReceiver() {
     private val context = contexto
     private val mascara = mask;
     private val wifi: WifiManager = contexto.getSystemService(Context.WIFI_SERVICE) as WifiManager
+    private val intentFilter = IntentFilter()
+    init {
+        intentFilter.addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION)
+        context.registerReceiver(this, intentFilter)
+
+    }
+
+
     private fun escanear():Boolean = wifi.startScan()
     fun getListadosWifiConexiones():ArrayList<String>?{
         if(escanear()){

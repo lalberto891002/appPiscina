@@ -79,7 +79,7 @@ class ComunicacionTCP(ip:String,porta:Int,timeOut:Int = MAX_TIMEOUT_COUNT_SHORT,
                             callback(mensaje)
                         }
                     }
-                    Thread.sleep(100)
+                    Thread.sleep(50)
                 }
                 catch (ex: Exception){
                     mensaje = errorMsg
