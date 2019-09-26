@@ -6,14 +6,17 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
+import com.comunication.tcp.comunicationtcp.ComunicacionTCP
+import com.comunication.tcp.comunicationtcp.Wifi_conexion
 import kotlinx.android.synthetic.main.activity_main.*
 import java.lang.Exception
 
+
 class MainActivity() : AppCompatActivity() {
-    private var tcpClient:ComunicacionTCP? =null
+    private var tcpClient: ComunicacionTCP? =null
     var yaarranco = false
     var estado_conexion:Boolean? = false
-    var wifi:Wifi_conexion? =null
+    var wifi: Wifi_conexion? =null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
