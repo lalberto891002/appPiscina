@@ -1,6 +1,10 @@
 package com.dominando.android.apppiscina
 
 
+import android.content.Context
+import android.net.wifi.ScanResult
+import android.net.wifi.WifiConfiguration
+import android.net.wifi.WifiManager
 import android.os.Looper
 import java.io.BufferedReader
 import java.io.InputStreamReader
@@ -10,7 +14,9 @@ import java.net.InetAddress
 import java.net.Socket
 import kotlin.concurrent.thread
 import android.os.Handler
+import java.net.PasswordAuthentication
 import java.util.*
+import kotlin.collections.ArrayList
 
 //maneja la comunicacao completa envio e recepcao recibe o metodo para os atualizacao da UI e para o erro
 class ComunicacionTCP(ip:String,porta:Int,timeOut:Int = MAX_TIMEOUT_COUNT_SHORT,msgError:String ="Error opening Socket",msgTimeout:String ="Timeout comunication",callback: (String) -> Unit):Observable() {
@@ -114,10 +120,46 @@ class ComunicacionTCP(ip:String,porta:Int,timeOut:Int = MAX_TIMEOUT_COUNT_SHORT,
     }
 
 }
+//falta implementar el broadcast receiver
+class Wifi_conexion(contexto: Context){
+    private val context = contexto
+    private val wifi:WifiManager = contexto.getSystemService(Context.WIFI_SERVICE) as WifiManager
+    private fun escanear():Boolean = wifi.startScan()
+     fun getListadosWifiConexiones():ArrayList<String>?{
+        if(escanear()){
+            var wifiScanList = wifi.getScanResults()
+            var lista = ArrayList<String>()
+            wifiScanList.forEach {
+                if(it.SSID.toString().contains(HEAD_NET))
+                    lista.add(it.SSID.toString())
+            }
+            return lista
+        }
+        else return ArrayList()
+    }
 
-class Wifi_conexion{
+    fun Connect_Wifi(ssid:String):Boolean{
+        var wifiConf = WifiConfiguration()
+        wifiConf.SSID = "\\$ssid\\"
+        wifiConf.preSharedKey = "\\$PASS_NET\\"
+        wifiConf.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE)
+        wifi.addNetwork(wifiConf)
+        val list = wifi.getConfiguredNetworks()
+        list.forEach {
+            if(it.SSID!=null && it.SSID.toString().equals(ssid)){
+                wifi.disconnect()
+                wifi.enableNetwork(it.networkId,true)
+                wifi.reconnect()
+                return true
+                }
+            }
 
-
+        return false
+    }
+    companion object{
+        val HEAD_NET = "SN-"
+        val PASS_NET = "152152153"
+    }
 }
 
 

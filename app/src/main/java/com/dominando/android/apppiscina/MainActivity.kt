@@ -2,32 +2,57 @@ package com.dominando.android.apppiscina
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
+import android.view.View
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main.*
 import java.lang.Exception
-import java.util.*
 
 class MainActivity() : AppCompatActivity() {
     private var tcpClient:ComunicacionTCP? =null
     var yaarranco = false
+    var estado_conexion:Boolean? = false
+    var wifi:Wifi_conexion? =null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         try {
-            tcpClient = ComunicacionTCP("172.16.2.232", 9002){mensaje->
-                yaarranco = false
-                Toast.makeText(this,mensaje,Toast.LENGTH_LONG).show() //siempre vem aqui es por error
-            }
+            wifi = Wifi_conexion(this)
+            var listado = wifi?.getListadosWifiConexiones()
+            if (listado != null && listado.size != 0) {
+                var adapter = ArrayAdapter<String>(
+                    applicationContext,
+                    android.R.layout.simple_spinner_dropdown_item,
+                    listado
+                )
+                spinner.adapter = adapter
 
+                spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                    override fun onNothingSelected(parent: AdapterView<*>?) {
+                        return
+                    }
+
+                    override fun onItemSelected(
+                        parent: AdapterView<*>,
+                        view: View,
+                        position: Int,
+                        id: Long
+                    ) {
+                        var ssid = listado.get(position)
+                        estado_conexion = wifi?.Connect_Wifi(ssid)
+
+                    }
+                }
+
+            }
         }
         catch (ex:Exception){
-            Toast.makeText(MainActivity@this,"Error abrindo socket",Toast.LENGTH_LONG).show()
+            Toast.makeText(MainActivity@this,"Error conectando a la wifi",Toast.LENGTH_LONG).show()
         }
 
         button.setOnClickListener {
-            if (tcpClient != null) {
+            if (tcpClient != null && estado_conexion==true) {
                 tcpClient?.enviar_pelo_socket("#CONNECT")
 
                 if(!yaarranco) {
@@ -42,6 +67,19 @@ class MainActivity() : AppCompatActivity() {
 
             }
 
+        }
+
+        button2.setOnClickListener{
+            try {
+                tcpClient = ComunicacionTCP("192.168.4.1", 9002){mensaje->
+                    yaarranco = false
+                    Toast.makeText(this,mensaje,Toast.LENGTH_LONG).show() //siempre vem aqui es por error
+                }
+
+            }
+            catch (ex:Exception){
+                Toast.makeText(MainActivity@this,"Error abrindo socket",Toast.LENGTH_LONG).show()
+            }
         }
     }
 
