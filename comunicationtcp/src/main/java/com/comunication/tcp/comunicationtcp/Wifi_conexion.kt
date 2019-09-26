@@ -1,25 +1,22 @@
 package com.comunication.tcp.comunicationtcp
 
+import android.content.BroadcastReceiver
 import android.content.Context
+import android.content.Intent
 import android.net.wifi.WifiConfiguration
 import android.net.wifi.WifiManager
 
-class Wifi_conexion(contexto: Context, mask:String){
+class Wifi_conexion(contexto: Context, mask:String): BroadcastReceiver() {
+
     private val context = contexto
     private val mascara = mask;
     private val wifi: WifiManager = contexto.getSystemService(Context.WIFI_SERVICE) as WifiManager
     private fun escanear():Boolean = wifi.startScan()
     fun getListadosWifiConexiones():ArrayList<String>?{
         if(escanear()){
-            var wifiScanList = wifi.getScanResults()
-            var lista = ArrayList<String>()
-            wifiScanList.forEach {
-                if(it.SSID.toString().contains(mascara))
-                    lista.add(it.SSID.toString())
-            }
-            return lista
+          return scanSuccess()
         }
-        else return ArrayList()
+        return scanFailure()
     }
 
     fun Connect_Wifi(ssid:String):Boolean{
@@ -40,6 +37,33 @@ class Wifi_conexion(contexto: Context, mask:String){
 
         return false
     }
+
+    override fun onReceive(context: Context?, intent: Intent?) {
+        val success = intent?.getBooleanExtra(WifiManager.EXTRA_RESULTS_UPDATED, false)?: false
+        if (success) {
+            scanSuccess()
+        } else {
+            scanFailure()
+        }
+
+    }
+
+    private fun scanSuccess():ArrayList<String> {
+        var wifiScanList = wifi.getScanResults()
+        var lista = ArrayList<String>()
+        wifiScanList.forEach {
+            if (it.SSID.toString().contains(mascara))
+                lista.add(it.SSID.toString())
+        }
+        return lista
+    }
+
+    private fun scanFailure():ArrayList<String>{
+        return ArrayList<String>()
+    }
+
+
+
     companion object{
         val HEAD_NET = "SN-"
         val PASS_NET = "152152153"
