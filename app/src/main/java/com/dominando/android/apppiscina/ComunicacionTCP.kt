@@ -121,8 +121,9 @@ class ComunicacionTCP(ip:String,porta:Int,timeOut:Int = MAX_TIMEOUT_COUNT_SHORT,
 
 }
 //falta implementar el broadcast receiver
-class Wifi_conexion(contexto: Context){
+class Wifi_conexion(contexto: Context,mask:String){
     private val context = contexto
+    private val mascara = mask;
     private val wifi:WifiManager = contexto.getSystemService(Context.WIFI_SERVICE) as WifiManager
     private fun escanear():Boolean = wifi.startScan()
      fun getListadosWifiConexiones():ArrayList<String>?{
@@ -130,7 +131,7 @@ class Wifi_conexion(contexto: Context){
             var wifiScanList = wifi.getScanResults()
             var lista = ArrayList<String>()
             wifiScanList.forEach {
-                if(it.SSID.toString().contains(HEAD_NET))
+                if(it.SSID.toString().contains(mascara))
                     lista.add(it.SSID.toString())
             }
             return lista
@@ -145,8 +146,8 @@ class Wifi_conexion(contexto: Context){
         wifiConf.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE)
         wifi.addNetwork(wifiConf)
         val list = wifi.getConfiguredNetworks()
-        list.forEach {
-            if(it.SSID!=null && it.SSID.toString().equals(ssid)){
+        list.forEachIndexed { index, it ->
+            if(it.SSID!=null && it.SSID.toString().trim('"',' ').equals(ssid)){
                 wifi.disconnect()
                 wifi.enableNetwork(it.networkId,true)
                 wifi.reconnect()

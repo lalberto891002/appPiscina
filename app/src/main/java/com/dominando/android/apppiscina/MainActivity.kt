@@ -18,7 +18,7 @@ class MainActivity() : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         try {
-            wifi = Wifi_conexion(this)
+            wifi = Wifi_conexion(this,"SN-")
             var listado = wifi?.getListadosWifiConexiones()
             if (listado != null && listado.size != 0) {
                 var adapter = ArrayAdapter<String>(
@@ -71,7 +71,7 @@ class MainActivity() : AppCompatActivity() {
 
         button2.setOnClickListener{
             try {
-                tcpClient = ComunicacionTCP("192.168.4.1", 9002){mensaje->
+                tcpClient = ComunicacionTCP("192.168.4.1", 5005){mensaje->
                     yaarranco = false
                     Toast.makeText(this,mensaje,Toast.LENGTH_LONG).show() //siempre vem aqui es por error
                 }
