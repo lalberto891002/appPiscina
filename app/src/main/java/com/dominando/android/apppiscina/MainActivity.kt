@@ -26,7 +26,7 @@ class MainActivity() : AppCompatActivity() {
 
         button.setOnClickListener {
             if (tcpClient != null && estado_conexion==true) {
-                tcpClient?.enviar_pelo_socket("#CONNECT")
+                tcpClient?.enviar_pelo_socket("#CONNECT\r\n")
 
                 if(!yaarranco) {
                     tcpClient?.comenzar_listener() { mensaje ->
